@@ -277,11 +277,11 @@ export class GraphCreateController extends ShapeCreateController {
 					this.nodeText.text = settings.vertexNames[1] || "";
 				}
 				// create a new graph if this was the last node
-				if (this.tmpShape && this.tmpShape!.data.geometry.vertices.length === settings.vertexNames.length * 2) {
+				if (this.tmpShape!.data.geometry.vertices.length === settings.vertexNames.length * 2) {
 					// If all values are nan, remove the shape
 					var array_nan = true;
 					for (var vertex of this.tmpShape!.data.geometry.vertices) {
-						if (!(array_nan && isNaN(vertex))) {
+						if (!isNaN(vertex)) {
 							array_nan = false;
 							break;
 						}
