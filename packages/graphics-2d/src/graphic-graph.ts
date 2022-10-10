@@ -33,8 +33,8 @@ export const settings: IGraphSettings = {
 		0X000075, 0X808080, 0Xffffff, 0X000000
 	],
 	edgeColorType: "node",
-	edges: [[0, 1], [0, 2]],
-	vertexNames: ['header', 'RFoot', 'LFoot'],
+	edges: [[0, 1], [0, 2], [1, 2], [2, 3]],
+	vertexNames: ['1', '2', '3', '4'],
 	showVertexName: true
 }
 

@@ -249,6 +249,25 @@ export class GraphCreateController extends ShapeCreateController {
 					const l = obj.data.geometry.vertices.length * 0.5;
 					this.nodeText.text = settings.vertexNames[l];
 				}
+				break;
+			}
+			case ' ': {
+				// delete last node
+				const obj = this.tmpShape as GraphicGraph;
+				obj.pushNode(NaN, NaN);
+				const l = obj.data.geometry.vertices.length * 0.5;
+				obj.data.geometry.visibles![obj.data.geometry.visibles!.length - 1] = true;
+				obj.data.geometry.edges = [...settings.edges.filter(([e1, e2]) => e1 < l && e2 < l)];
+				this.nodeText.text = settings.vertexNames[l];
+				// update node text position
+				if (settings.showVertexName) {
+					this.nodeText.position.x = this.renderer.mouse.x - this.nodeText.width - 10;
+					this.nodeText.position.y = this.renderer.mouse.y - this.nodeText.height - 10;
+				}
+				// check length
+				if (this.tmpShape && this.tmpShape!.data.geometry.vertices.length === settings.vertexNames.length * 2) {
+					this.createGraph();
+				}
 			}
 		}
 	}
