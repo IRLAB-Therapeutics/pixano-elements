@@ -161,6 +161,7 @@ export class GraphCreateController extends ShapeCreateController {
 			this.nodeText.text = settings.vertexNames[0];
 			this.nodeText.position.x = this.renderer.mouse.x - this.nodeText.width - 10;
 			this.nodeText.position.y = this.renderer.mouse.y - this.nodeText.height - 10;
+			window.addEventListener('keydown', this.onKeyDownCreate);
 		}
 	}
 
@@ -169,6 +170,7 @@ export class GraphCreateController extends ShapeCreateController {
 		if (settings.showVertexName) {
 			this.renderer.stage.removeChild(this.nodeText);
 			// this.renderer.removeBubbles();
+			window.removeEventListener('keydown', this.onKeyDownCreate);
 		}
 	}
 
@@ -204,7 +206,6 @@ export class GraphCreateController extends ShapeCreateController {
 			this.renderer.stage.addChild(this.tmpShape);
 			this.tmpShape.draw();
 			this.nodeText.text = settings.vertexNames[1] || "";
-			window.addEventListener('keydown', this.onKeyDownCreate);
 		}
 		// update node text position
 		if (settings.showVertexName) {
@@ -233,7 +234,6 @@ export class GraphCreateController extends ShapeCreateController {
 		shape.destroy();
 		this.tmpShape = null;
 		this.emitCreate();
-		window.removeEventListener('keydown', this.onKeyDownCreate);
 	}
 
 	/**
@@ -248,6 +248,54 @@ export class GraphCreateController extends ShapeCreateController {
 					obj.popNode();
 					const l = obj.data.geometry.vertices.length * 0.5;
 					this.nodeText.text = settings.vertexNames[l];
+				}
+				break;
+			}
+			case ' ': {
+				const obj = this.tmpShape as GraphicGraph;
+				if (obj) {
+					obj.pushNode(NaN, NaN);
+					const l = obj.data.geometry.vertices.length * 0.5;
+					obj.data.geometry.visibles![obj.data.geometry.visibles!.length - 1] = false;
+					obj.data.geometry.edges = [...settings.edges.filter(([e1, e2]) => e1 < l && e2 < l)];
+					this.nodeText.text = settings.vertexNames[l];
+				} else {
+					const data = observable({
+						id: 'tmp',
+						geometry: {
+							vertices: [NaN, NaN],
+							edges: [],
+							visibles: [false],
+							type: 'graph'
+						}
+					} as ShapeData);
+					this.tmpShape = new GraphicGraph(data) as GraphicGraph;
+					this.tmpShape.scaleX = this.renderer.imageWidth;
+					this.tmpShape.scaleY = this.renderer.imageHeight;
+					this.renderer.stage.addChild(this.tmpShape);
+					this.tmpShape.draw();
+					this.nodeText.text = settings.vertexNames[1] || "";
+				}
+				// create a new graph if this was the last node
+				if (this.tmpShape!.data.geometry.vertices.length === settings.vertexNames.length * 2) {
+					// If all values are nan, remove the shape
+					var array_nan = true;
+					for (var vertex of this.tmpShape!.data.geometry.vertices) {
+						if (!isNaN(vertex)) {
+							array_nan = false;
+							break;
+						}
+					}
+					if (array_nan) {
+						this.renderer.stage.removeChild(obj);
+						obj.destroy();
+						this.tmpShape = null;
+						this.emitCreate();
+						// This seems to get added when adding the shape to this, need to add manually
+						this.nodeText.text = settings.vertexNames[0]
+					} else {
+						this.createGraph();
+					}
 				}
 			}
 		}
