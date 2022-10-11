@@ -25,7 +25,7 @@ export class ShapesEditController extends Controller {
 	// internal properties
 	protected cachedShape: ShapeData | null = null;
 
-	private activeObjectId: string = '';
+	protected activeObjectId: string = '';
 
 	private isDragging: boolean = false;
 
