@@ -143,8 +143,8 @@ export class GraphsUpdateController extends ShapesEditController {
 		switch (event.key) {
 			case " " : {
 				if (nodeIdx > -1) {
-					(shape as any).geometry.vertices[nodeIdx * 2 + 0] = NaN;
-					(shape as any).geometry.vertices[nodeIdx * 2 + 1] = NaN;
+					shape!.geometry.vertices[nodeIdx * 2 + 0] = NaN;
+					shape!.geometry.vertices[nodeIdx * 2 + 1] = NaN;
 				}
 			}
 		}
