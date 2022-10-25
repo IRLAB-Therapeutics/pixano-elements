@@ -23,6 +23,7 @@ export class GraphsUpdateController extends ShapesEditController {
 		this.onNodeDown = this.onNodeDown.bind(this);
 		this.onNodeHover = this.onNodeHover.bind(this);
 		this.onNodeOut = this.onNodeOut.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
 	}
 
 	public activate() {
@@ -39,11 +40,13 @@ export class GraphsUpdateController extends ShapesEditController {
 		this.renderer.stage.interactive = true;
 		this.renderer.stage.addChild(this.nodeText);
 		this.renderer.stage.on('pointerdown', this.onRootDown);
+		window.addEventListener('keydown', this.onKeyDown);
 		this.drawDefaultShapesDecoration();
 	}
 
 	public deactivate() {
 		super.deactivate();
+		window.removeEventListener('keydown', this.onKeyDown);
 		this.renderer.stage.removeChild(this.nodeText);
 	}
 
@@ -131,6 +134,19 @@ export class GraphsUpdateController extends ShapesEditController {
 		if (this.changed) {
 			this.changed = false;
 			this.emitUpdate();
+		}
+	}
+
+	protected onKeyDown(event: KeyboardEvent) {
+		const nodeIdx = this.activeNodeIdx;
+		const shape = this.getShape(this.activeObjectId);
+		switch (event.key) {
+			case " " : {
+				if (nodeIdx > -1) {
+					shape!.geometry.vertices[nodeIdx * 2 + 0] = NaN;
+					shape!.geometry.vertices[nodeIdx * 2 + 1] = NaN;
+				}
+			}
 		}
 	}
 }
